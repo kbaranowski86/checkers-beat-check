@@ -22,6 +22,7 @@ namespace CheckersBeatCheck
                                    new int[]{6,6},
                                    new int[]{6,4},
                                    new int[]{4,4},
+                                   new int[]{2,6}
                                };
 
         // sprawdz czy da sie wykonac bicie na wskazanym polu
@@ -49,10 +50,11 @@ namespace CheckersBeatCheck
         }
 
         // rekurencyjne wyliczenie ilosci mozliwych bic
-        static byte Bij(List<int[]> zbite, int[] docPoz, byte ilBic)
+        static List<int[]> Bij(List<int[]> zbite, int[] docPoz)
         {
-            byte biciePg, biciePd, bicieLd, bicieLg;
-            biciePg = biciePd = bicieLd = bicieLg = ilBic;
+            List<int[]> zbitePg, zbitePd, zbiteLd, zbiteLg;
+            zbitePg = zbitePd = zbiteLd = zbiteLg = zbite;
+            
 
             int[] pgSasiad = new int[] { docPoz[0] + 1, docPoz[1] + 1 };
             int[] pgRuch = new int[] { docPoz[0] + 2, docPoz[1] + 2 };
@@ -66,38 +68,37 @@ namespace CheckersBeatCheck
             if (SprawdzPole(pgSasiad, pgRuch, zbite) == true)
             {
                 zbite.Add(pgSasiad);
-                biciePg = Bij(zbite, pgRuch, (byte)(ilBic + 1));
+                zbitePg = Bij(zbite, pgRuch);
             }
             if (SprawdzPole(pdSasiad, pdRuch, zbite) == true)
             {
                 zbite.Add(pdSasiad);
-                biciePd = Bij(zbite, pdRuch, (byte)(ilBic + 1));
+                zbitePd = Bij(zbite, pdRuch);
             }
             if (SprawdzPole(ldSasiad, ldRuch, zbite) == true)
             {
                 zbite.Add(ldSasiad);
-                bicieLd = Bij(zbite, ldRuch, (byte)(ilBic + 1));
+                zbiteLd = Bij(zbite, ldRuch);
             }
             if (SprawdzPole(lgSasiad, lgRuch, zbite) == true)
             {
                 zbite.Add(lgSasiad);
-                bicieLg = Bij(zbite, lgRuch, (byte)(ilBic + 1));
+                zbiteLg = Bij(zbite, lgRuch);
             }
 
-            byte[] ilosciBic = { biciePg, biciePd, bicieLd, bicieLg };
-            Array.Sort(ilosciBic);
-            byte maxIloscBic = ilosciBic[ilosciBic.Length - 1];
-            return maxIloscBic;
+            List<List<int[]>> zbiteWszystkie = new List<List<int[]>>{zbitePg, zbitePd, zbiteLd, zbiteLg};
+            zbiteWszystkie.Sort((a, b) => b.Count - a.Count);
+            return zbiteWszystkie[0];
         }
 
         static void Main(string[] args)
         {
-            byte maxIlBic = 0;
+            int maxIlBic = 0;
             List<int[]> poprzPoz;
             foreach (int[] pBialy in pBiale)
             {
                 poprzPoz = new List<int[]>();
-                byte ilBic = Program.Bij(poprzPoz, pBialy, 0);
+                int ilBic = Program.Bij(poprzPoz, pBialy).Count;
                 if (ilBic > maxIlBic)
                 {
                     maxIlBic = ilBic;

@@ -1,0 +1,1 @@
+Simple beats number checking for input pawns position.
